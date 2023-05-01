@@ -153,7 +153,10 @@ public final class ReciprocalArraySum {
             tasks.add(new ReciprocalArraySumTask(getChunkStartInclusive(i, nChunks, input.length), getChunkEndExclusive(i, nChunks, input.length), input));
         }
         for (int i = 0; i < nChunks; i++) {
-            pool.invoke(tasks.get(i));
+            pool.execute(tasks.get(i));
+        }
+        for (int i = 0; i < nChunks; i++) {
+            tasks.get(i).join();
         }
         for (int i = 0; i < nChunks; i++) {
             sum += tasks.get(i).getValue();
@@ -178,14 +181,16 @@ public final class ReciprocalArraySum {
 
         ForkJoinPool pool = ForkJoinPool.commonPool();
         List<ReciprocalArraySumTask> tasks = new ArrayList<>();
-        int nChunks = getChunkSize(numTasks, input.length);
-        for (int i = 0; i < nChunks; i++) {
-            tasks.add(new ReciprocalArraySumTask(getChunkStartInclusive(i, nChunks, input.length), getChunkEndExclusive(i, nChunks, input.length), input));
+        for (int i = 0; i < numTasks; i++) {
+            tasks.add(new ReciprocalArraySumTask(getChunkStartInclusive(i, numTasks, input.length), getChunkEndExclusive(i, numTasks, input.length), input));
         }
-        for (int i = 0; i < nChunks; i++) {
-            pool.invoke(tasks.get(i));
+        for (int i = 0; i < numTasks; i++) {
+            pool.execute(tasks.get(i));
         }
-        for (int i = 0; i < nChunks; i++) {
+        for (int i = 0; i < numTasks; i++) {
+            tasks.get(i).join();
+        }
+        for (int i = 0; i < numTasks; i++) {
             sum += tasks.get(i).getValue();
         }
 
