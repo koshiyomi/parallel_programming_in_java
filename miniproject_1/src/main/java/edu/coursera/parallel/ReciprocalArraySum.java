@@ -146,14 +146,14 @@ public final class ReciprocalArraySum {
         assert input.length % 2 == 0;
         double sum = 0;
 
-        ForkJoinPool pool = new ForkJoinPool(2);
+        ForkJoinPool pool = ForkJoinPool.commonPool();
         List<ReciprocalArraySumTask> tasks = new ArrayList<>();
         int nChunks = 2;
         for (int i = 0; i < nChunks; i++) {
             tasks.add(new ReciprocalArraySumTask(getChunkStartInclusive(i, nChunks, input.length), getChunkEndExclusive(i, nChunks, input.length), input));
         }
         for (int i = 0; i < nChunks; i++) {
-            pool.execute(tasks.get(i));
+            pool.submit(tasks.get(i));
         }
         for (int i = 0; i < nChunks; i++) {
             tasks.get(i).join();
@@ -185,7 +185,7 @@ public final class ReciprocalArraySum {
             tasks.add(new ReciprocalArraySumTask(getChunkStartInclusive(i, numTasks, input.length), getChunkEndExclusive(i, numTasks, input.length), input));
         }
         for (int i = 0; i < numTasks; i++) {
-            pool.execute(tasks.get(i));
+            pool.submit(tasks.get(i));
         }
         for (int i = 0; i < numTasks; i++) {
             tasks.get(i).join();
